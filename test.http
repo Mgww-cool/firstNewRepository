@@ -1,7 +1,8 @@
-POST http://localhost:8080/register
+POST http://localhost:8080/api/users/register
 Content-Type: application/json
 
 {
-  "name": "LL",
-  "age": 13
+    "username": "coder123",
+    "email": "coder@example.com",
+    "password": "securepassword"
 }

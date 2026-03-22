@@ -1,14 +1,22 @@
 package com.example.demo.entity;
 
+import jakarta.persistence.*;
+import lombok.Data; // Optional: requires Lombok dependency to auto-generate getters/setters
+
+@Entity
+@Table(name = "users")
+@Data
 public class User {
-    private String name;
-    private int age;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public User() {}  // ⭐ 必须有无参构造！
+    @Column(nullable = false, unique = true)
+    private String username;
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    @Column(nullable = false)
+    private String email;
 
-    public int getAge() { return age; }
-    public void setAge(int age) { this.age = age; }
+    @Column(nullable = false)
+    private String password;
 }

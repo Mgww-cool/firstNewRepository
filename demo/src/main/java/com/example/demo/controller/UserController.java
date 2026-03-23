@@ -1,14 +1,13 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.UserFindByIdRequest;
-import com.example.demo.dto.UserUpdateRequest;
+import com.example.demo.common.Result;
+import com.example.demo.common.ResultCode;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.User;
-import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.service.UserService;
+import com.example.demo.vo.UserVO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,36 +20,37 @@ public class UserController{
 
     //register
     @PostMapping()
-   public  User register(@Valid @RequestBody User user){
-       return userService.register(user);
-   }
+    public Result<UserVO> register(@Valid @RequestBody UserDTO userDTO){
+        UserVO userVO=userService.userRegister(userDTO);
+        return new Result<UserVO>(ResultCode.SUCCESS,userVO);
+    }
 
-   //getAll
-    @GetMapping("/getAll")
-    public ResponseEntity<List<User>> getAll(){
-        List<User> userlist= userService.getAll();
-        return ResponseEntity.ok(userlist);
+    //getAll
+    @GetMapping("/list")
+    public Result<List<UserVO>> getAllUser(){
+        List<UserVO> voList=userService.getAllUser();
+        return new Result<List<UserVO>>(ResultCode.SUCCESS,voList);
     }
 
     //find by id
     @GetMapping("/{id}")
-    public ResponseEntity<UserFindByIdRequest> findById(@PathVariable Long id) {
-        UserFindByIdRequest userFindByIdRequest=userService.findById(id);
-        return ResponseEntity.ok(userFindByIdRequest);
+    public Result<UserVO> findById(@PathVariable Long id){
+        UserVO userVO=userService.findById(id);
+        return new Result<>(ResultCode.SUCCESS,userVO);
     }
 
-    //Update
-    @PutMapping("/update")
-    public ResponseEntity<UserUpdateRequest>
-    userUpdate(@Valid @RequestBody UserUpdateRequest userUpdateRequest,Long id){
-        userService.userUpdate(id,userUpdateRequest);
-        return ResponseEntity.ok(userUpdateRequest);
+    //update
+    @PutMapping("/{id}")
+    public Result<UserVO> updateUser(@PathVariable Long id,@Valid @RequestBody UserDTO userDTO){
+        UserVO userVO=userService.updateUser(id,userDTO);
+        return new Result<>(ResultCode.SUCCESS,userVO);
     }
 
-    //delete by id
+    //delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUserById( @PathVariable Long id){
-        userService.deleteUserById(id);
-        return ResponseEntity.noContent().build();
+    //为了统一，写成Void
+    public Result<Void> deleteById(@PathVariable Long id){
+        userService.deleteById(id);
+        return Result.success(null);
     }
 }

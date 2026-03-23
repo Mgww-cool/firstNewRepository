@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.GetAllUserResponse;
+import com.example.demo.dto.UserFindByIdRequest;
 import com.example.demo.dto.UserUpdateRequest;
 import com.example.demo.entity.User;
 import com.example.demo.exception.UserNotFoundException;
@@ -9,49 +11,50 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class UserService {
-
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
-    public User registerUser(User user) {
-        // Logic: Check if user exists
-        if (userRepository.findByUsername(user.getUsername()) != null) {
-            throw new RuntimeException("Username already exists!");
-        }
+    //register
+    public User register(User user){
+        //if user already exist
+
+        //else
         return userRepository.save(user);
     }
 
-    public List<User> getAllUsers() {
+    //getAll
+    public List<User> getAll(){
         return userRepository.findAll();
     }
 
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-    }
-    public User getUserById(Long id) {
+    //find by id
+    public UserFindByIdRequest findById(Long id){
+        //if Id is not exist
         Optional<User> userOptional=userRepository.findById(id);
-        if (userOptional.isPresent()) {
-            return userOptional.get();
+        User user = userOptional.orElseThrow(
+                ()->new UserNotFoundException("Not Found ID:"+id)
+        );
+        return new UserFindByIdRequest(user.getUsername(),user.getEmail());
+    }
+
+    //Update
+    public void userUpdate(Long id,UserUpdateRequest userUpdateRequest){
+        Optional<User> userOptional=userRepository.findById(id);
+        User user =userOptional.orElseThrow(
+                ()->new UserNotFoundException("Not Found ID:"+id)
+        );
+        userRepository.save(user);
+    }
+
+    //delete by id
+    public void deleteUserById(Long id){
+        if(userRepository.existsById(id)) {
+            userRepository.deleteById(id);
         }else{
-            throw new RuntimeException();
+            throw new UserNotFoundException("Not Found Id:"+id+" can not delete");
         }
     }
-    public User userUpdate(Long id, UserUpdateRequest request){
-        Optional<User> userOptional=userRepository.findById(id);
-        User user = userOptional.orElseThrow(()->
-                new UserNotFoundException("用户不存在，ID："+id));
-        // 3. 更新字段 (实际业务中可能需要判断字段是否为 null 再决定是否覆盖)
-        if (request.getUsername() != null) {
-            user.setUsername(request.getUsername());
-        }
-        if (request.getEmail() != null) {
-            user.setEmail(request.getEmail());
-        }
-
-        // 4. 保存 (JPA 会自动识别这是更新操作，因为 ID 存在)
-        return userRepository.save(user);
-    }
-
 }

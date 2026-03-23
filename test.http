@@ -2,7 +2,13 @@ POST http://localhost:8080/api/users/register
 Content-Type: application/json
 
 {
-    "username": "coder123",
-    "email": "coder@example.com",
+    "username": "code1",
+    "email": "coder",
     "password": "securepassword"
 }
+
+###
+# curl -X DELETE http://localhost:8080/api/users/1
+DELETE http://localhost:8080/api/users/6
+
+
